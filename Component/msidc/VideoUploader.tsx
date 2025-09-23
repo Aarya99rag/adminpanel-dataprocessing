@@ -6,7 +6,7 @@ import {
     getPresignedPartUrl,
     completeVideoUpload,
     abortVideoUpload,
-} from "@/apis/operations/rasta360";
+} from "@/apis/operations/msidc";
 import {
     HardDriveUpload,
     FileVideo,
@@ -46,13 +46,7 @@ function calcPartSize(size: number) {
     return partSize;
 }
 
-export default function VideoUploader({
-    tripID,
-    expectedFileName,
-}: {
-    tripID: string;
-    expectedFileName: string;
-}) {
+export default function VideoUploader({ surveyId }: { surveyId: string }) {
     const [selectedName, setSelectedName] = useState<string | null>(null);
     const [progress, setProgress] = useState<number>(0);
     const [status, setStatus] = useState<
@@ -60,7 +54,7 @@ export default function VideoUploader({
     >("Idle");
     const [message, setMessage] = useState<string>("");
     const params = useSearchParams();
-    // const fileName = params.get("fileName");
+    const fileName = params.get("fileName") ?? "";
 
     // refs
     const fileRef = useRef<File | null>(null);
@@ -287,7 +281,8 @@ export default function VideoUploader({
                     uploadIdRef.current!,
                     keyRef.current!,
                     sortedParts,
-                    tripID
+                    surveyId,
+                    fileName
                 );
                 console.timeEnd("completeMultipart");
 
@@ -363,8 +358,8 @@ export default function VideoUploader({
     async function onFileSelected(f: File | null) {
         if (!f) return;
 
-        if (f.name !== expectedFileName) {
-            toast.error(`Upload correct file: ${expectedFileName}`);
+        if (f.name !== fileName) {
+            toast.error(`Upload correct file: ${fileName}`);
             return;
         }
 
@@ -470,22 +465,17 @@ export default function VideoUploader({
         };
     }, [status]);
 
-    return !tripID ? (
-        <p>
-            Make sure to properly upload Metadata properly then proceed for
-            video upload
-        </p>
-    ) : (
+    return (
         <div className="bg-white w-[40vw] p-6 rounded-2xl shadow-lg mx-auto mt-2">
             <div className="flex justify-between">
                 <h3 className="text-xl font-semibold text-gray-800">
                     Upload file{" "}
-                    <span className="text-[#FE6100]">{expectedFileName}</span>
+                    <span className="text-[#08803A]">{fileName}</span>
                 </h3>
                 <X
-                    className="cursor-pointer text-[#FE6100] hover:bg-[#aaaaaacc] rounded-full"
+                    className="cursor-pointer text-[#08803A] hover:bg-[#aaaaaacc] rounded-full"
                     onClick={() => {
-                        router.push("/rasta360");
+                        router.push("/msidc");
                     }}
                 />
             </div>
@@ -516,7 +506,7 @@ export default function VideoUploader({
             )}
 
             <Image
-                src="/Uploading.svg"
+                src="/Uploadmsidc.svg"
                 alt="Uploading..."
                 width={350}
                 height={350}
@@ -526,7 +516,7 @@ export default function VideoUploader({
             {!selectedName && status === "Idle" && (
                 <label className="flex flex-col items-center px-2 py-2  bg-gray-50 border-2 border-dashed border-gray-400 rounded-xl cursor-pointer hover:bg-gray-100 transition">
                     <HardDriveUpload
-                        className="text-[#FE6100] mb-2"
+                        className="text-[#08803A] mb-2"
                         size={40}
                     />
                     <span className="text-gray-700 font-medium">
@@ -565,12 +555,12 @@ export default function VideoUploader({
                         </button>
                     </div>
 
-                    <button
+                    <Button
                         onClick={() => startUpload()}
-                        className="bg-[#FE6100] text-white px-4 py-2 rounded-lg shadow hover:bg-orange-600 cursor-pointer transition w-30 mx-auto"
+                        className="bg-[#08803A] hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow transition w-30 mx-auto"
                     >
                         Upload
-                    </button>
+                    </Button>
                 </div>
             )}
 
@@ -589,7 +579,7 @@ export default function VideoUploader({
                         <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
                             <div
                                 style={{ width: `${progress}%` }}
-                                className="h-full bg-gradient-to-r from-[#FE6100] to-[#fe2f00] transition-all"
+                                className="h-full bg-gradient-to-r from-[#08803A] to-[#054d23] transition-all"
                             />
                         </div>
                         <div className="mt-2 text-sm text-gray-600">
@@ -609,7 +599,7 @@ export default function VideoUploader({
                         ) : status === "Uploading" ? (
                             <Button
                                 onClick={() => pause(true)}
-                                className="flex items-center gap-1 bg-[#FE6100] text-white px-3 py-1 rounded-lg hover:bg-orange-600"
+                                className="flex items-center gap-1 bg-[#08803A] text-white px-3 py-1 rounded-lg hover:bg-green-800"
                             >
                                 <Pause size={18} /> Pause
                             </Button>
@@ -623,7 +613,7 @@ export default function VideoUploader({
                                     else if (status === "Paused")
                                         await resume();
                                 }}
-                                className="flex items-center gap-1 bg-[#FE6100] text-white px-3 py-1 rounded-lg hover:bg-orange-600"
+                                className="flex items-center gap-1 bg-[#034EA2] text-white px-3 py-1 rounded-lg hover:bg-blue-700"
                             >
                                 <Play size={18} /> Resume
                             </Button>

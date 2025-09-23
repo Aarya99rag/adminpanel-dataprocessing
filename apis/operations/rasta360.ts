@@ -81,6 +81,26 @@ export const updateUsername = async (
     }
 };
 
+export const getOfficeNames = async (officeName: string) => {
+    try {
+        const response = await apiConnector(
+            "get",
+            `${RASTA360.GET_OFFICE_NAMES}?officeName=${encodeURIComponent(
+                officeName
+            )}`,
+            null, // { Authorization: `${token}` },
+            null,
+            null,
+            "json"
+        );
+
+        return response;
+    } catch (error) {
+        console.error("survey fetch error:", error);
+        throw error;
+    }
+};
+
 export const addUser = async (formData: {
     name: string;
     username: string;
@@ -89,6 +109,7 @@ export const addUser = async (formData: {
     email: string;
     phone: string;
     pastUsername?: string;
+    office_id: string
 }) => {
     try {
         const response = await apiConnector(

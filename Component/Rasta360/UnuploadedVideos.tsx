@@ -7,6 +7,8 @@ import { Plus, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import UsernameUpdate from "./UsernameUpdate";
+import Tooltip from "@mui/material/Tooltip";
+import Image from "next/image";
 
 type Trip = {
     trip_id: string;
@@ -54,8 +56,22 @@ const UnuploadedVideos = () => {
         fetchTrips();
     }, []);
 
-    if (loading) return <Loader project="rasta360"/>;
-    if (trips.length === 0) return <p>No unuploaded videos found.</p>;
+    if (loading) return <Loader project="rasta360" />;
+    if (trips.length === 0)
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="flex flex-col justify-center items-center">
+                    <Image
+                        src="/NodataRasta.svg"
+                        alt="Uploading..."
+                        width={350}
+                        height={350}
+                        className="mx-auto"
+                    />
+                    <p className="text-xl font-semibold">No data to Upload.</p>
+                </div>
+            </div>
+        );
 
     return (
         <>
@@ -84,18 +100,24 @@ const UnuploadedVideos = () => {
                                 {trip.roadName}
                             </h2>
 
-                            <Upload
-                                onClick={() => {
-                                    setUsernameModalOpen(true);
-                                    setSelectedPastUsername(trip.username);
-                                    setSelectedTripId(trip.trip_id);
-                                    setSelectedFileName(
-                                        trip.video_filename ||
-                                            `trip-${trip.trip_id}.mp4`
-                                    );
-                                }}
-                                className="text-[#FE6100] cursor-pointer"
-                            />
+                            <Tooltip
+                                title="Upload trip video"
+                                placement="top"
+                                arrow
+                            >
+                                <Upload
+                                    onClick={() => {
+                                        setUsernameModalOpen(true);
+                                        setSelectedPastUsername(trip.username);
+                                        setSelectedTripId(trip.trip_id);
+                                        setSelectedFileName(
+                                            trip.video_filename ||
+                                                `trip-${trip.trip_id}.mp4`
+                                        );
+                                    }}
+                                    className="text-[#FE6100] cursor-pointer"
+                                />
+                            </Tooltip>
                         </div>
 
                         <div className="space-y-3 text-sm">

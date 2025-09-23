@@ -1,13 +1,14 @@
 import React from "react";
 
 interface LoaderProps {
-    project?: "rasta360" | "nhai"; 
+    project?: "rasta360" | "nhai" | "msidc"; 
 }
 
 const Loader: React.FC<LoaderProps> = ({ project = "rasta360" }) => {
     const projectColors: Record<string, string> = {
         rasta360: "#FE6100", // orange
         nhai: "#034EA2", // blue
+        msidc: "#088038", // green
     };
 
     const color = projectColors[project] || "#FE6100"; // fallback = orange
